@@ -114,14 +114,17 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
             div_children.append(pre_node)
 
         # ---------------------------------------------------------- #
-        # Quote – each line becomes a paragraph inside <blockquote>
+        # Quote lines become inline content inside <blockquote>
         # ---------------------------------------------------------- #
         elif block_type == BlockType.Quote:
             quote_lines = [
-                l.lstrip("> ").strip() for l in block.split("\n") if l.strip()
+                line
+                for line in (l.lstrip("> ").strip() for l in block.split("\n"))
+                if line
             ]
-            children = [ParentNode("p", text_to_children(l)) for l in quote_lines]
-            div_children.append(ParentNode("blockquote", children))
+            div_children.append(
+                ParentNode("blockquote", text_to_children(" ".join(quote_lines)))
+            )
 
         # ---------------------------------------------------------- #
         # Unordered list
